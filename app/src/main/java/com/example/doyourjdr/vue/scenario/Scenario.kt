@@ -1,41 +1,26 @@
 package com.example.doyourjdr.vue.scenario
 
-import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBars
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TransformOrigin
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.constraintlayout.compose.ConstraintLayout
-import com.example.doyourjdr.R
 import com.example.doyourjdr.ui.theme.DoYourJDRTheme
 import com.example.doyourjdr.vue.MainActivity
+import com.example.doyourjdr.vue.fonctionscommunes.AfficheContenu
 import com.example.doyourjdr.vue.fonctionscommunes.AfficheImageFond
 import com.example.doyourjdr.vue.fonctionscommunes.AfficheFiltreFond
 
@@ -59,19 +44,23 @@ class Scenario : ComponentActivity() {
     @Composable
     private fun ConstructionComposant() {
         println("SECONDE ACTIVITE")
-        AfficheImageFond(2.7f, 2.7f, TransformOrigin(0f, 0.3f))
+        AfficheImageFond(2.7f, 2.7f, TransformOrigin(0.09f, 0.42f))
         AfficheFiltreFond()
-        AfficheContenu()
+        AfficheContenu(finishRetour = { finish() }, // indique si le bouton retour clot l'activité
+            routeRetour = MainActivity::class.java, // indique la route du bouton retour
+            contenuCorps = { AfficheContenu() })
     }
 
     @Composable
-    fun AfficheContenu() {
+    private fun AfficheContenu() {
         ConstraintLayout(
             Modifier
                 .fillMaxSize()
-                .windowInsetsPadding(WindowInsets.systemBars)) {
+
+        ) {
             val (entete, corps, enpieds) = createRefs()
-            AfficheEntete(
+            val topLimite = createGuidelineFromTop(0.5f)
+            AfficheContenuEntete(
                 modifier = Modifier
                     .fillMaxWidth()
                     .fillMaxHeight(0.1f)
@@ -81,64 +70,70 @@ class Scenario : ComponentActivity() {
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
                     },
-                route = MainActivity::class.java
             )
-            AfficheCorps(
+            AfficheContenuCorps(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .fillMaxHeight(0.82f)
+                    .fillMaxHeight(0.8f)
                     .constrainAs(corps) {
                         top.linkTo(entete.bottom)
+                        bottom.linkTo(enpieds.top)
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
-                    })
-            AfficheEnPied(
+                    },
+            )
+            AfficheContenuEnPied(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .fillMaxHeight(0.08f)
+                    .fillMaxHeight(0.1f)
                     .constrainAs(enpieds) {
                         top.linkTo(corps.bottom)
+                        bottom.linkTo(corps.top)
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
-                    })
-        }
-    }
-
-
-    @Composable
-    fun AfficheEntete(modifier: Modifier, route: Class<out Activity>? = null) {
-        val context = LocalContext.current
-        Row(
-            modifier = modifier,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Image(
-                painter = painterResource(R.drawable.epee_retour_simple),
-                contentDescription = "BoutonRetour",
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .aspectRatio(1f)
-                    .rotate(-90f)
-                    .clickable {
-                        if (route != null) {
-                            val intent = Intent(context, route)
-                            context.startActivity(intent)
-                        }
-                    }
+                    },
             )
         }
     }
 
+
     @Composable
-    private fun AfficheCorps(modifier: Modifier) {
-        Column(modifier = modifier.background(Color.Red)) { }
+    private fun AfficheContenuEntete(modifier: Modifier) {
+         ConstraintLayout(
+             modifier = modifier.background(Color.Red)
+         ) {
+             val (composantText) = createRefs()
+             Text(
+                 text = "Scénario",
+                 modifier = Modifier
+                     .constrainAs(composantText){
+                         top.linkTo(parent.top)
+                         bottom.linkTo(parent.bottom)
+                         start.linkTo(parent.start)
+                         end.linkTo(parent.end)
+                     }
+                     .background(Color.Green)
+             )
+         }
+    }
+    @Composable
+    private fun AfficheContenuCorps(modifier: Modifier) {
+        Box(modifier = modifier.background(Color.Gray))
     }
 
     @Composable
-    private fun AfficheEnPied(modifier: Modifier) {
-        Row(modifier = modifier.background(Color.Green)) { }
+    private fun AfficheContenuEnPied(modifier: Modifier) {
+        Box(modifier = modifier.background(Color.White))
     }
+
+
 }
+
+
+
+
+
+
 
 
 
