@@ -5,27 +5,44 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstrainedLayoutReference
 import androidx.constraintlayout.compose.ConstraintLayout
+import com.example.doyourjdr.R
 import com.example.doyourjdr.ui.theme.DoYourJDRTheme
 import com.example.doyourjdr.vue.MainActivity
+import com.example.doyourjdr.vue.data.ScenarioEntity
 import com.example.doyourjdr.vue.fonctionscommunes.AfficheContenu
 import com.example.doyourjdr.vue.fonctionscommunes.AfficheImageFond
 import com.example.doyourjdr.vue.fonctionscommunes.AfficheFiltreFond
+import com.example.doyourjdr.vue.fonctionscommunes.BoutonClassique
+import com.example.doyourjdr.vue.fonctionscommunes.KCObraLetra
 
 class Scenario : ComponentActivity() {
     private lateinit var innerPadding: PaddingValues
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -46,79 +63,114 @@ class Scenario : ComponentActivity() {
         println("SECONDE ACTIVITE")
         AfficheImageFond(2.7f, 2.7f, TransformOrigin(0.09f, 0.42f))
         AfficheFiltreFond()
-        AfficheContenu(finishRetour = { finish() }, // indique si le bouton retour clot l'activité
+        AfficheContenu(
+            finishRetour = { finish() }, // indique si le bouton retour clot l'activité
             routeRetour = MainActivity::class.java, // indique la route du bouton retour
-            contenuCorps = { AfficheContenu() })
+            composantInterne = { AfficheContenuInterne() })
     }
 
     @Composable
-    private fun AfficheContenu() {
+    private fun AfficheContenuInterne() {
+        val listeScenario: MutableList<ScenarioEntity> = mutableListOf()
         ConstraintLayout(
-            Modifier
-                .fillMaxSize()
-
+            Modifier.fillMaxSize()
         ) {
             val (entete, corps, enpieds) = createRefs()
-            val topLimite = createGuidelineFromTop(0.5f)
             AfficheContenuEntete(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .fillMaxHeight(0.1f)
+                    .fillMaxHeight(0.15f)
+                    //.background(Color.Cyan)
                     .constrainAs(entete) {
                         top.linkTo(parent.top)
                         bottom.linkTo(corps.top)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
                     },
             )
-            AfficheContenuCorps(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight(0.8f)
-                    .constrainAs(corps) {
+            if (listeScenario.isEmpty()) {
+                AfficheAucunScenario(
+                    modifierLayout = Modifier
+                        .fillMaxHeight(0.85f)
+                        .constrainAs(corps){
                         top.linkTo(entete.bottom)
-                        bottom.linkTo(enpieds.top)
+                        bottom.linkTo(parent.bottom)
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
-                    },
-            )
-            AfficheContenuEnPied(
+                    }
+                )
+            } else {
+                AfficheScenarios(listeScenario, entete)
+            }
+
+        }
+    }
+    @Composable
+    private fun AfficheContenuEntete(modifier: Modifier) {
+        ConstraintLayout(
+            modifier = modifier,
+
+        ) {
+            val (composantText) = createRefs()
+            Text(
+                text = "Scénario",
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight(0.1f)
-                    .constrainAs(enpieds) {
-                        top.linkTo(corps.bottom)
-                        bottom.linkTo(corps.top)
+                    .constrainAs(composantText) {
+                        top.linkTo(parent.top)
+                        bottom.linkTo(parent.bottom)
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
                     },
+                fontSize = 40.sp,
+                fontWeight = FontWeight.Bold,
+                fontFamily = KCObraLetra
             )
         }
     }
 
+    private @Composable
+    fun AfficheAucunScenario(modifierLayout: Modifier) {
 
-    @Composable
-    private fun AfficheContenuEntete(modifier: Modifier) {
-         ConstraintLayout(
-             modifier = modifier.background(Color.Red)
-         ) {
-             val (composantText) = createRefs()
-             Text(
-                 text = "Scénario",
-                 modifier = Modifier
-                     .constrainAs(composantText){
-                         top.linkTo(parent.top)
-                         bottom.linkTo(parent.bottom)
-                         start.linkTo(parent.start)
-                         end.linkTo(parent.end)
-                     }
-                     .background(Color.Green)
-             )
-         }
+        Column(
+            modifier = modifierLayout
+                .clip(RoundedCornerShape(70f))
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxHeight(0.8f)
+                    .fillMaxWidth(0.8f)
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(Color(0xFF703F36))
+                    .padding(8.dp)
+                    .border(5.dp, Color(0xFFA6730F), RoundedCornerShape(12.dp)),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text("Aucun scénario trouvé")
+                Text("Créer un scénario")
+            }
+            Spacer(
+                modifier = Modifier.fillMaxHeight(0.25f)
+            )
+            BoutonClassique(
+                contentDescription = "Continuer",
+                imageRessource = R.drawable.marteau,
+                rotationImage = 20f,
+                modifier = Modifier
+                    .fillMaxSize(0.45f)
+            ) {
+                println("Continuer")
+            }
+        }
     }
-    @Composable
-    private fun AfficheContenuCorps(modifier: Modifier) {
-        Box(modifier = modifier.background(Color.Gray))
+
+    private @Composable
+    fun AfficheScenarios(
+        listeScenario: MutableList<ScenarioEntity>,
+        entete: ConstrainedLayoutReference
+    ) {
+        Text("Au moins 1 scénario")
     }
 
     @Composable

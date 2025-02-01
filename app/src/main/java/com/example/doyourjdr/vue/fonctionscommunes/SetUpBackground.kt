@@ -86,23 +86,25 @@ fun AfficheFiltreFond() {
 fun AfficheContenu(
     finishRetour: () -> Unit,
     routeRetour: Class<out Activity>?,
-    contenuCorps: @Composable () -> Unit
-    ) {
+    composantInterne: @Composable () -> Unit,
+) {
     ConstraintLayout(
         Modifier
             .fillMaxSize()
             .windowInsetsPadding(WindowInsets.systemBars)
     ) {
         val (entete, corps, enpieds) = createRefs()
+        val heightEntete = 0.1f
         AfficheEntete(
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(0.1f)
+                .fillMaxHeight(heightEntete)
                 .constrainAs(entete) {
                     bottom.linkTo(corps.top)
                 },
             route = routeRetour,
             finishActivity = finishRetour
+
         )
         AfficheCorps(
             modifier = Modifier
@@ -111,7 +113,7 @@ fun AfficheContenu(
                 .constrainAs(corps) {
                     top.linkTo(entete.bottom)
                 },
-            composantInterne = contenuCorps
+            composantInterne = composantInterne
         )
         AfficheEnPied(
             modifier = Modifier
@@ -130,10 +132,12 @@ fun AfficheEntete(
     finishActivity: (() -> Unit)? = null
 ) {
     val context = LocalContext.current
+
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
     ) {
+
         Image(
             painter = painterResource(R.drawable.epee_retour_simple),
             contentDescription = "BoutonRetour",
@@ -151,6 +155,7 @@ fun AfficheEntete(
 
                     }
                 }
+
         )
     }
 }
@@ -164,7 +169,6 @@ private fun AfficheCorps(modifier: Modifier, composantInterne: @Composable () ->
         Box(
             modifier = Modifier
                 .fillMaxWidth(0.92f),
-
             ) {
             Image(
                 painter = painterResource(R.drawable.feuille_fripee),
@@ -177,9 +181,9 @@ private fun AfficheCorps(modifier: Modifier, composantInterne: @Composable () ->
                         scaleY = 1.2f
                     },
                 contentScale = ContentScale.FillBounds
-
             )
-            composantInterne() // contenu du corps
+            composantInterne()
+            // contenu du corps
 
         }
     }
