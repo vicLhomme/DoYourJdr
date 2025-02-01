@@ -42,13 +42,14 @@ import androidx.compose.ui.unit.sp
 import com.example.doyourjdr.ui.theme.DoYourJDRTheme
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.example.doyourjdr.R
+import com.example.doyourjdr.vue.fonctionscommunes.AfficheImageFond
 import com.example.doyourjdr.vue.scenario.Scenario
 
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        println("JE SUIS A LA PREMIERE ACTIVITE")
+
         enableEdgeToEdge()
         setContent {
             ConstructionComposant()
@@ -58,10 +59,11 @@ class MainActivity : ComponentActivity() {
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun ConstructionComposant() {
+private fun ConstructionComposant() {
+    println("JE SUIS A LA PREMIERE ACTIVITE")
     DoYourJDRTheme {
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-            AfficheImageFond()
+            AfficheImageFond( 1.7f, 1.7f)
             AfficheBouton()
         }
     }
@@ -295,29 +297,6 @@ private fun RotatedBoxWithText(titre: String, modifier: Modifier, fontSize: Int,
                 fontSize = fontSize.sp
             )
         }
-    }
-}
-
-@Composable
-fun AfficheImageFond() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(WindowInsets.systemBars.asPaddingValues())
-            .clipToBounds(),
-        contentAlignment = Alignment.Center
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.fondecran),
-            contentDescription = "Une image depuis drawable",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .fillMaxSize()
-                .graphicsLayer {
-                    scaleX = 1.7f
-                    scaleY = 1.7f
-                }
-        )
     }
 }
 

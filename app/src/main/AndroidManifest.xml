@@ -17,6 +17,7 @@
             android:exported="true"
             android:label="@string/title_activity_scenario"
             android:theme="@style/Theme.DoYourJDR" >
+
         </activity>
         <activity
             android:name=".vue.MainActivity"
