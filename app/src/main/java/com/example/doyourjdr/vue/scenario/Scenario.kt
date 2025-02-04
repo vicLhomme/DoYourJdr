@@ -31,25 +31,56 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstrainedLayoutReference
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.example.doyourjdr.R
+import com.example.doyourjdr.data.room.ScenarioDao
+import com.example.doyourjdr.data.room.ScenarioDatabase
+import com.example.doyourjdr.data.room.ScenarioEntity
 import com.example.doyourjdr.ui.theme.DoYourJDRTheme
 import com.example.doyourjdr.vue.MainActivity
-import com.example.doyourjdr.vue.data.ScenarioEntity
 import com.example.doyourjdr.vue.fonctionscommunes.AfficheContenu
-import com.example.doyourjdr.vue.fonctionscommunes.AfficheImageFond
 import com.example.doyourjdr.vue.fonctionscommunes.AfficheFiltreFond
+import com.example.doyourjdr.vue.fonctionscommunes.AfficheImageFond
 import com.example.doyourjdr.vue.fonctionscommunes.BoutonClassique
 import com.example.doyourjdr.vue.fonctionscommunes.KCObraLetra
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-class Scenario : ComponentActivity() {
+
+@AndroidEntryPoint
+class Scenario() : ComponentActivity() {
     private lateinit var innerPadding: PaddingValues
+    private lateinit var db: ScenarioDatabase
+    private lateinit var scenarioDao: ScenarioDao
 
+
+
+    @OptIn(DelicateCoroutinesApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        db = ScenarioDatabase.getDatabase(this)
+        scenarioDao = db.scenarioDao()
+        val scenario = ScenarioEntity(libelle = "Un dernier Scénario", avancement = 1)
+        GlobalScope.launch(Dispatchers.IO) {
+            scenarioDao.insert(scenario)
+        }
+
+        GlobalScope.launch(Dispatchers.Main) {
+            val scenarios = withContext(Dispatchers.IO) {
+                scenarioDao.getAllScenario()
+            }
+            scenarios.forEach {
+                println(it)
+            }
+        }
         enableEdgeToEdge()
         setContent {
             DoYourJDRTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     this.innerPadding = innerPadding
+
                     ConstructionComposant()
                 }
             }
@@ -60,18 +91,28 @@ class Scenario : ComponentActivity() {
     @Preview(showBackground = true, showSystemUi = true)
     @Composable
     private fun ConstructionComposant() {
-        println("SECONDE ACTIVITE")
-        AfficheImageFond(2.7f, 2.7f, TransformOrigin(0.09f, 0.42f))
-        AfficheFiltreFond()
-        AfficheContenu(
-            finishRetour = { finish() }, // indique si le bouton retour clot l'activité
-            routeRetour = MainActivity::class.java, // indique la route du bouton retour
-            composantInterne = { AfficheContenuInterne() })
+
+            println("SECONDE ACTIVITE")
+            AfficheImageFond(2.7f, 2.7f, TransformOrigin(0.09f, 0.42f))
+            AfficheFiltreFond()
+
+            AfficheContenu(
+                finishRetour = { finish() }, // indique si le bouton retour clot l'activité
+                routeRetour = MainActivity::class.java, // indique la route du bouton retour
+                composantInterne = { AfficheContenuInterne() })
+
+
     }
+
 
     @Composable
     private fun AfficheContenuInterne() {
-        val listeScenario: MutableList<ScenarioEntity> = mutableListOf()
+
+
+        val listeScenario: List<ScenarioEntity> =
+            mutableListOf()// = scenarioViewModel.getScenarios()
+
+
         ConstraintLayout(
             Modifier.fillMaxSize()
         ) {
@@ -88,14 +129,14 @@ class Scenario : ComponentActivity() {
             )
             if (listeScenario.isEmpty()) {
                 AfficheAucunScenario(
-                    modifierLayout = Modifier
+                    modifier = Modifier
                         .fillMaxHeight(0.85f)
-                        .constrainAs(corps){
-                        top.linkTo(entete.bottom)
-                        bottom.linkTo(parent.bottom)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                    }
+                        .constrainAs(corps) {
+                            top.linkTo(entete.bottom)
+                            bottom.linkTo(parent.bottom)
+                            start.linkTo(parent.start)
+                            end.linkTo(parent.end)
+                        }
                 )
             } else {
                 AfficheScenarios(listeScenario, entete)
@@ -103,12 +144,13 @@ class Scenario : ComponentActivity() {
 
         }
     }
+
     @Composable
     private fun AfficheContenuEntete(modifier: Modifier) {
         ConstraintLayout(
             modifier = modifier,
 
-        ) {
+            ) {
             val (composantText) = createRefs()
             Text(
                 text = "Scénario",
@@ -127,10 +169,10 @@ class Scenario : ComponentActivity() {
     }
 
     private @Composable
-    fun AfficheAucunScenario(modifierLayout: Modifier) {
+    fun AfficheAucunScenario(modifier: Modifier) {
 
         Column(
-            modifier = modifierLayout
+            modifier = modifier
                 .clip(RoundedCornerShape(70f))
                 .fillMaxSize(),
             verticalArrangement = Arrangement.Top,
@@ -167,7 +209,7 @@ class Scenario : ComponentActivity() {
 
     private @Composable
     fun AfficheScenarios(
-        listeScenario: MutableList<ScenarioEntity>,
+        listeScenario: List<ScenarioEntity>,
         entete: ConstrainedLayoutReference
     ) {
         Text("Au moins 1 scénario")
