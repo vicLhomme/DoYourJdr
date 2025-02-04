@@ -4,6 +4,7 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.Relation
+import com.example.doyourjdr.data.room.personnages.PersonnageEntity
 import com.example.doyourjdr.data.room.etape.EtapeEntity
 
 
@@ -15,19 +16,15 @@ data class ScenarioEntity(
 
     val avancement : Int,
 
-    /*
-    @ColumnInfo
     val descriptionGlobale : String,
 
-    @ColumnInfo
-    val personnages : MutableList<PersonnageEntity>,
+    /*
+  @ColumnInfo
+  val carteGlobale : CartesEntity,
 
-    @ColumnInfo
-    val carteGlobale : CartesEntity,
-
-    @ColumnInfo
-    val sousCartes : MutableList<CartesEntity>,
-     */
+  @ColumnInfo
+  val sousCartes : MutableList<CartesEntity>,
+   */
 )
 data class ScenarioEntityComplete(
     @Embedded val scenario: ScenarioEntity,
@@ -36,6 +33,12 @@ data class ScenarioEntityComplete(
         parentColumn = "libelle",
         entityColumn = "scenario_libelle"
     )
-    val etapes: List<EtapeEntity>
+    val etapes: List<EtapeEntity>,
+
+    @Relation(
+        parentColumn = "libelle",
+        entityColumn = "scenario_libelle"
+    )
+    val personnages : List<PersonnageEntity>
 )
 

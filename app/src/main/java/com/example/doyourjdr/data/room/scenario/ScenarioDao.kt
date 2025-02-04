@@ -6,6 +6,8 @@ import androidx.room.Query
 import androidx.room.Transaction
 import com.example.doyourjdr.data.room.etape.EtapeDao
 import com.example.doyourjdr.data.room.etape.EtapeEntity
+import com.example.doyourjdr.data.room.personnages.PersonnageDao
+import com.example.doyourjdr.data.room.personnages.PersonnageEntity
 
 @Dao
 interface ScenarioDao {
@@ -21,8 +23,13 @@ interface ScenarioDao {
     suspend fun getScenario(id: String): ScenarioEntityComplete
 
     @Transaction
-    suspend fun insertScenarioWithEtapes(scenario: ScenarioEntity, etapes: List<EtapeEntity>, etapeDao: EtapeDao) {
+    suspend fun insertScenarioWithEtapes(scenario: ScenarioEntity,
+                                         etapes: List<EtapeEntity>,
+                                         etapeDao: EtapeDao,
+                                         personnages: List<PersonnageEntity>,
+                                         personnageDao: PersonnageDao) {
         insert(scenario)
+        personnages.forEach { personnageDao.insertPersonnages(it) }
         etapes.forEach { etapeDao.insertEtape(it) }
     }
 

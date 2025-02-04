@@ -37,6 +37,7 @@ import com.example.doyourjdr.R
 import com.example.doyourjdr.data.room.scenario.ScenarioDao
 import com.example.doyourjdr.data.room.ScenarioDatabase
 import com.example.doyourjdr.data.room.etape.EtapeDao
+import com.example.doyourjdr.data.room.personnages.PersonnageDao
 import com.example.doyourjdr.data.room.scenario.ScenarioEntityComplete
 import com.example.doyourjdr.ui.theme.DoYourJDRTheme
 import com.example.doyourjdr.vue.MainActivity
@@ -56,6 +57,7 @@ class Scenario() : ComponentActivity() {
     private lateinit var db: ScenarioDatabase
     private lateinit var scenarioDao: ScenarioDao
     private lateinit var etapeDao: EtapeDao
+    private lateinit var personnageDao: PersonnageDao
     private val recupDonnee: Boolean = true
     private val createDonnee: Boolean = true
 
@@ -73,6 +75,8 @@ class Scenario() : ComponentActivity() {
         db = ScenarioDatabase.getDatabase(this)
         scenarioDao = db.scenarioDao()
         etapeDao = db.etapeDao()
+        personnageDao = db.personnageDao()
+
 
 
         enableEdgeToEdge()
@@ -94,7 +98,7 @@ class Scenario() : ComponentActivity() {
         if (createDonnee) {
             println("CREATION DES DONNEES")
             LaunchedEffect(Unit) {
-                setUpScenario(scenarioDao = scenarioDao, etapeDao = etapeDao)
+                setUpScenario(scenarioDao = scenarioDao, etapeDao = etapeDao, personnageDao = personnageDao)
                 println("D'abord récupération des données: ")
                 scenarioDao.getAllScenarios().forEach {
                     println("J'ai trouvé: $it")
@@ -251,8 +255,13 @@ class Scenario() : ComponentActivity() {
         Column {
             Text(scenarioRelation.scenario.libelle)
             Text(scenarioRelation.scenario.avancement.toString())
+            println("Etape: ")
             scenarioRelation.etapes.forEach {
                 Text(fontWeight = FontWeight.Bold, text = "${it.libelle} ${it.numero}")
+            }
+            Text("Personnages: ")
+            scenarioRelation.personnages.forEach {
+                Text(it.nom)
             }
         }
     }
