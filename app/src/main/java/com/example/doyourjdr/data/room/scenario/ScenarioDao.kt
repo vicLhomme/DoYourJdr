@@ -23,15 +23,26 @@ interface ScenarioDao {
     suspend fun getScenario(id: String): ScenarioEntityComplete
 
     @Transaction
-    suspend fun insertScenarioWithEtapes(scenario: ScenarioEntity,
-                                         etapes: List<EtapeEntity>,
-                                         etapeDao: EtapeDao,
-                                         personnages: List<PersonnageEntity>,
-                                         personnageDao: PersonnageDao) {
+    suspend fun insertScenarioWithEtapes(
+        scenario: ScenarioEntity,
+        etapes: List<EtapeEntity>,
+        etapeDao: EtapeDao,
+        personnageDao: PersonnageDao
+    ) {
         insert(scenario)
-        personnages.forEach { personnageDao.insertPersonnages(it) }
-        etapes.forEach { etapeDao.insertEtape(it) }
+        scenario.perosonnageNom.forEach {
+            println("SCENARIO DAO : ${!personnageDao.exist(it)}")
+            if (!personnageDao.exist(it)) {
+                personnageDao.insertPersonnages(PersonnageEntity(it, mutableListOf(scenario.libelle)))
+            }
+            else if(!personnageDao.hasThisScenario(scenario.libelle)){
+                personnageDao.addScenarioToPersonnage(scenario.libelle, it)
+            }
+        }
+        etapes.forEach {
+            etapeDao.insertEtape(it)
+        }
+
+
     }
-
-
 }

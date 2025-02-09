@@ -2,6 +2,7 @@
 activityComposeVersion = "1.6.0"
 agp = "8.7.3"
 androidxLifecycleRuntimeKtx = "2.6.0"
+gson = "2.10.1"
 hiltAndroid = "2.50"
 hiltCompiler = "1.2.0"
 hiltLifecycleViewmodelVersion = "1.0.0-alpha03"
@@ -28,6 +29,7 @@ roomCompilerVersion = "2.5.0"
 roomKtx = "2.6.1"
 google = "5"
 roomRuntime = "2.6.1"
+firebaseCrashlyticsBuildtools = "3.0.3"
 
 [libraries]
 androidx-activity-compose-v160 = { module = "androidx.activity:activity-compose", version.ref = "activityComposeVersion" }
@@ -38,6 +40,7 @@ androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomCompiler" }
 androidx-room-compiler-v250 = { module = "androidx.room:room-compiler", version.ref = "roomCompilerVersion" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomRuntime" }
+gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroid" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
@@ -64,6 +67,7 @@ androidx-activity = { group = "androidx.activity", name = "activity", version.re
 androidx-room-common = { group = "androidx.room", name = "room-common", version.ref = "roomCommon" }
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomKtx" }
 google = { group = "com.google", name = "google", version.ref = "google" }
+firebase-crashlytics-buildtools = { group = "com.google.firebase", name = "firebase-crashlytics-buildtools", version.ref = "firebaseCrashlyticsBuildtools" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

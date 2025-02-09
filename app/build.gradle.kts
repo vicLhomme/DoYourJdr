@@ -52,6 +52,7 @@ android {
 dependencies {
 
     implementation(libs.androidx.room.runtime)
+    implementation(libs.firebase.crashlytics.buildtools)
     ksp(libs.androidx.room.compiler.v250)
     room {
         schemaDirectory("$projectDir/schemas")
@@ -81,6 +82,7 @@ dependencies {
     implementation(libs.androidx.room.common)
     implementation(libs.androidx.room.ktx)
     implementation(libs.google)
+    implementation(libs.gson)
 
 
 

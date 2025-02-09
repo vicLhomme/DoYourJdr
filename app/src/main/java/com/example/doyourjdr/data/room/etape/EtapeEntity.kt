@@ -6,16 +6,18 @@ import androidx.room.ForeignKey
 import com.example.doyourjdr.data.room.scenario.ScenarioEntity
 
 @Entity(tableName = "etape",
-    primaryKeys = ["libelle"],
     foreignKeys = [ForeignKey(
         entity = ScenarioEntity::class,
         parentColumns = ["libelle"],  // La clé primaire de ScenarioEntity
         childColumns = ["scenario_libelle"],  // La clé étrangère dans EtapeEntity
         onDelete = ForeignKey.CASCADE // Supprime les étapes si le scénario est supprimé
     )]
+    ,primaryKeys = ["libelle_etape", "scenario_libelle"],
+
 )
 data class EtapeEntity (
 
+    @ColumnInfo("libelle_etape")
     val libelle : String,
     val numero : Int,
     @ColumnInfo("scenario_libelle")

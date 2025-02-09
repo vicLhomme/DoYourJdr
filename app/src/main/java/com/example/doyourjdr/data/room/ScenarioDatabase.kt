@@ -4,14 +4,17 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import com.example.doyourjdr.data.room.etape.EtapeDao
 import com.example.doyourjdr.data.room.etape.EtapeEntity
+import com.example.doyourjdr.data.room.personnages.Converters
 import com.example.doyourjdr.data.room.personnages.PersonnageDao
 import com.example.doyourjdr.data.room.personnages.PersonnageEntity
 import com.example.doyourjdr.data.room.personnages.RelationEntity
 import com.example.doyourjdr.data.room.scenario.ScenarioDao
 import com.example.doyourjdr.data.room.scenario.ScenarioEntity
 
+@TypeConverters(Converters::class)
 @Database(entities = [ScenarioEntity::class, EtapeEntity::class, PersonnageEntity::class, RelationEntity::class], version = 1)
 //@Database(entities = [ScenarioEntity::class, EtapeEntity::class, PersonnageEntity::class], version = 1)
 abstract class ScenarioDatabase : RoomDatabase() {

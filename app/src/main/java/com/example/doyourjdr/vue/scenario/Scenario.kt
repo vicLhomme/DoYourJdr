@@ -4,23 +4,29 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -49,7 +55,12 @@ import com.example.doyourjdr.vue.fonctionscommunes.KCObraLetra
 import com.example.doyourjdr.vue.fonctionscommunes.setUpScenario
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.DelicateCoroutinesApi
-
+import androidx.compose.runtime.*
+import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 
 @AndroidEntryPoint
 class Scenario() : ComponentActivity() {
@@ -67,7 +78,7 @@ class Scenario() : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         if (createDonnee) {
-            println("SUPPRESSION DES DONNES")
+            println("SCENARIO ACTIVITE : SUPPRESSION DES DONNES")
             deleteDatabase("scenario")
 
         }
@@ -96,10 +107,9 @@ class Scenario() : ComponentActivity() {
     private fun ConstructionComposant() {
         val scenarios = remember { mutableStateOf<List<ScenarioEntityComplete>>(emptyList()) }
         if (createDonnee) {
-            println("CREATION DES DONNEES")
+            println("SCENARIO ACTIVITE : CREATION DES DONNEES")
             LaunchedEffect(Unit) {
                 setUpScenario(scenarioDao = scenarioDao, etapeDao = etapeDao, personnageDao = personnageDao)
-                println("D'abord récupération des données: ")
                 scenarioDao.getAllScenarios().forEach {
                     println("J'ai trouvé: $it")
                 }
@@ -233,19 +243,53 @@ class Scenario() : ComponentActivity() {
     fun AfficheScenarios(
         listeScenario: List<ScenarioEntityComplete>,
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxHeight(0.8f)
-                .fillMaxWidth(0.8f)
-                .clip(RoundedCornerShape(16.dp))
-                .background(Color(0xFF703F36))
-                .padding(8.dp)
-                .border(5.dp, Color(0xFFA6730F), RoundedCornerShape(12.dp)),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            listeScenario.forEach {
-                AfficheUnScenario(scenarioRelation = it)
+        var index by remember { mutableIntStateOf(0) }
+        println(index)
+        Column{
+            Column(
+                modifier = Modifier
+                    .fillMaxHeight(0.8f)
+                    .fillMaxWidth(0.8f)
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(Color(0xFF703F36)),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Row(modifier = Modifier
+                    .wrapContentWidth()
+                    .fillMaxHeight(0.2f)
+                    .clipToBounds(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    for(i in listeScenario.indices){
+                        Image(
+                            painter = painterResource(
+                                if (i == index) R.drawable.epee_retour_simple else R.drawable.bouclier
+                            ),
+                            contentDescription = "",
+                            modifier = Modifier
+                                //.background(if (i == index) Color.White else Color.Gray)
+                                .graphicsLayer {
+                                    scaleX = if (i == index) 0.8f else 0.4f
+                                    scaleY = if (i == index) 0.6f else 0.4f
+                                }
+                                .clickable {
+                                    index = i
+                                },
+                            contentScale = ContentScale.Inside
+                        )
+                    }
+                }
+                Box(
+                    modifier = Modifier
+                        .padding(8.dp)
+                        //.fillMaxHeight(0.9f)
+                        .weight(1f)
+                        .fillMaxWidth()
+                        .border(5.dp, Color(0xFFA6730F), RoundedCornerShape(32.dp))
+                ){
+                    AfficheUnScenario(scenarioRelation = listeScenario[index])
+                }
             }
         }
     }
@@ -260,8 +304,8 @@ class Scenario() : ComponentActivity() {
                 Text(fontWeight = FontWeight.Bold, text = "${it.libelle} ${it.numero}")
             }
             Text("Personnages: ")
-            scenarioRelation.personnages.forEach {
-                Text(it.nom)
+            scenarioRelation.scenario.perosonnageNom.forEach {
+                Text(it)
             }
         }
     }

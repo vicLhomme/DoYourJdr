@@ -12,7 +12,7 @@ interface EtapeDao {
     @Query("SELECT * FROM etape")
     suspend fun getAllScenarios(): List<EtapeEntity>
 
-    @Query("SELECT * FROM etape WHERE etape.libelle = :id")
+    @Query("SELECT * FROM etape WHERE etape.libelle_etape = :id")
     suspend fun getScenario(id: String): EtapeEntity
 
 }
